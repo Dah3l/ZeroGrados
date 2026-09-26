@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
 import { ShoppingCart, Search, CheckCircle, Snowflake, MessageCircle } from 'lucide-react';
-import { useBusiness } from '../context/BusinessContext';
+
+const WHATSAPP_NUMBER = '5355511093';
+const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=Hola%2C%20quiero%20cotizar%20un%20equipo%20de%20aire%20acondicionado`;
 
 export default function BuySell() {
-  const { data } = useBusiness();
-  const whatsappLink = `https://wa.me/${data.phoneNumber}?text=${encodeURIComponent('Hola, quiero cotizar un equipo de aire acondicionado')}`;
   return (
     <section id="venta" className="py-16 sm:py-20 md:py-28 bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,7 +57,7 @@ export default function BuySell() {
             </div>
 
             <a
-              href={whatsappLink}
+              href={WHATSAPP_LINK}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-blue-600 to-cyan-500 active:from-blue-700 active:to-cyan-600 hover:from-blue-700 hover:to-cyan-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-full text-base sm:text-lg font-bold transition-all duration-300 shadow-xl hover:shadow-2xl active:scale-95 mt-6 sm:mt-8"
@@ -98,10 +98,9 @@ export default function BuySell() {
                 <p className="text-xs sm:text-sm text-blue-600 font-medium">
                   📞 Llámanos o escríbenos por WhatsApp
                 </p>
-                <p className="text-lg sm:text-xl font-bold text-gray-900 mt-1">{data.phoneDisplay}</p>
+                <p className="text-lg sm:text-xl font-bold text-gray-900 mt-1">+53 5 5511 0934</p>
               </div>
             </div>
-            {/* Decorative elements */}
             <div className="absolute -top-4 -right-4 w-20 h-20 sm:w-24 sm:h-24 bg-cyan-200/30 rounded-full blur-xl" />
             <div className="absolute -bottom-4 -left-4 w-24 h-24 sm:w-32 sm:h-32 bg-blue-200/30 rounded-full blur-xl" />
           </motion.div>
