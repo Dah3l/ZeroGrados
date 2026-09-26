@@ -13,8 +13,11 @@ import {
   Type,
   Key,
   AlertTriangle,
+  Cloud,
+  HardDrive,
 } from 'lucide-react';
 import { useBusiness, BusinessData } from '../context/BusinessContext';
+import { isSupabaseConfigured } from '../lib/supabase';
 
 interface AdminPanelProps {
   onBack: () => void;
@@ -48,18 +51,26 @@ export default function AdminPanel({ onBack, onLogout }: AdminPanelProps) {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    updateData(formData);
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 2500);
+  const handleSave = async () => {
+    const success = await updateData(formData);
+    if (success) {
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 2500);
+    } else {
+      alert('Error al guardar los cambios. Por favor, intenta de nuevo.');
+    }
   };
 
-  const handleReset = () => {
-    resetData();
-    setFormData(data);
-    setShowResetConfirm(false);
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 2500);
+  const handleReset = async () => {
+    const success = await resetData();
+    if (success) {
+      setFormData(data);
+      setShowResetConfirm(false);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 2500);
+    } else {
+      alert('Error al restablecer los datos. Por favor, intenta de nuevo.');
+    }
   };
 
   const hasChanges = JSON.stringify(formData) !== JSON.stringify(data);
@@ -84,7 +95,20 @@ export default function AdminPanel({ onBack, onLogout }: AdminPanelProps) {
                 </div>
                 <div className="hidden sm:block">
                   <h1 className="text-sm font-bold text-gray-900">Panel de Administración</h1>
-                  <p className="text-xs text-gray-500">{data.businessName}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs text-gray-500">{data.businessName}</p>
+                    {isSupabaseConfigured() ? (
+                      <span className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
+                        <Cloud className="w-3 h-3" />
+                        Nube
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">
+                        <HardDrive className="w-3 h-3" />
+                        Local
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

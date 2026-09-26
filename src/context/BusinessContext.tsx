@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { fetchBusinessData, updateBusinessData, resetBusinessData, defaultBusinessData } from '../services/businessService';
 
 // Tipos de datos del negocio
 export interface BusinessData {
@@ -26,68 +27,55 @@ export interface BusinessData {
   adminPassword: string;
 }
 
-// Datos por defecto
-const defaultBusinessData: BusinessData = {
-  businessName: 'Zero Grados',
-  phoneNumber: '5355511093',
-  phoneDisplay: '+53 5 5511 0934',
-  whatsappMessage: 'Hola, me interesa información sobre los servicios de Zero Grados',
-  schedule: '8:00 AM - 6:00 PM',
-  scheduleDays: 'Lunes a Sábado',
-  coverageZone: 'La Habana y alrededores',
-  facebookUrl: '#',
-  instagramUrl: '#',
-  heroTitle: '¡NO ESPERES AL VERANO!',
-  heroSubtitle: '¡TEN TU ESPACIO CLIMATIZADO YA!',
-  heroDescription: 'Soluciones integrales para tu hogar y negocio. Mantenimiento, reparación e instalación profesional para que disfrutes del confort en todo momento.',
-  adminPassword: 'zero2024',
-};
-
-// Clave de localStorage
-const STORAGE_KEY = 'zero_grados_business_data';
-
 // Contexto
 interface BusinessContextType {
   data: BusinessData;
-  updateData: (newData: Partial<BusinessData>) => void;
-  resetData: () => void;
+  updateData: (newData: Partial<BusinessData>) => Promise<boolean>;
+  resetData: () => Promise<boolean>;
+  isLoading: boolean;
 }
 
 const BusinessContext = createContext<BusinessContextType | undefined>(undefined);
 
 // Provider
 export function BusinessProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<BusinessData>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        return { ...defaultBusinessData, ...JSON.parse(stored) };
-      }
-    } catch (e) {
-      console.error('Error loading business data:', e);
-    }
-    return defaultBusinessData;
-  });
+  const [data, setData] = useState<BusinessData>(defaultBusinessData);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Cargar datos al iniciar
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch (e) {
-      console.error('Error saving business data:', e);
-    }
-  }, [data]);
+    const loadData = async () => {
+      try {
+        const loadedData = await fetchBusinessData();
+        setData(loadedData);
+      } catch (error) {
+        console.error('Error loading business data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadData();
+  }, []);
 
-  const updateData = (newData: Partial<BusinessData>) => {
-    setData(prev => ({ ...prev, ...newData }));
+  const updateData = async (newData: Partial<BusinessData>): Promise<boolean> => {
+    const success = await updateBusinessData(newData);
+    if (success) {
+      setData(prev => ({ ...prev, ...newData }));
+    }
+    return success;
   };
 
-  const resetData = () => {
-    setData(defaultBusinessData);
-    localStorage.removeItem(STORAGE_KEY);
+  const resetData = async (): Promise<boolean> => {
+    const success = await resetBusinessData();
+    if (success) {
+      setData(defaultBusinessData);
+    }
+    return success;
   };
 
   return (
-    <BusinessContext.Provider value={{ data, updateData, resetData }}>
+    <BusinessContext.Provider value={{ data, updateData, resetData, isLoading }}>
       {children}
     </BusinessContext.Provider>
   );

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BusinessProvider } from './context/BusinessContext';
+import { BusinessProvider, useBusiness } from './context/BusinessContext';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Services from './components/Services';
@@ -29,6 +29,7 @@ function AppContent() {
   });
 
   const { activeSection, scrollToSection } = useNavigation();
+  const { isLoading } = useBusiness();
 
   // Handle hash changes
   useEffect(() => {
@@ -61,6 +62,18 @@ function AppContent() {
     window.location.hash = '';
     setView('home');
   };
+
+  // Mostrar loading mientras se cargan los datos
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-white text-lg">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (view === 'admin-login') {
     return <AdminLogin onLogin={handleLogin} onBack={handleBackToHome} />;
