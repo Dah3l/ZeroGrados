@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Snowflake, MessageCircle, Menu, X } from 'lucide-react';
-import { useBusiness } from '../context/BusinessContext';
+
+const WHATSAPP_NUMBER = '5355511093';
+const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=Hola%2C%20me%20interesa%20informaci%C3%B3n%20sobre%20los%20servicios%20de%20Zero%20Grados`;
 
 interface HeaderProps {
   activeSection: string;
@@ -9,12 +11,9 @@ interface HeaderProps {
 }
 
 export default function Header({ activeSection, onNavigate }: HeaderProps) {
-  const { data } = useBusiness();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  const whatsappLink = `https://wa.me/${data.phoneNumber}?text=${encodeURIComponent(data.whatsappMessage)}`;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -57,7 +56,6 @@ export default function Header({ activeSection, onNavigate }: HeaderProps) {
 
   const handleNavClick = useCallback((sectionId: string) => {
     setIsMenuOpen(false);
-    // Small delay to let menu close animation start
     setTimeout(() => {
       onNavigate(sectionId);
     }, 100);
@@ -82,7 +80,6 @@ export default function Header({ activeSection, onNavigate }: HeaderProps) {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
-            {/* Logo */}
             <button
               onClick={() => handleNavClick('inicio')}
               className="flex items-center gap-2 group"
@@ -97,11 +94,10 @@ export default function Header({ activeSection, onNavigate }: HeaderProps) {
                   scrolled || isMenuOpen ? 'text-gray-900' : 'text-white'
                 }`}
               >
-                {data.businessName}
+                Zero Grados
               </span>
             </button>
 
-            {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-6 lg:gap-8">
               {navLinks.map((link) => (
                 <button
@@ -122,10 +118,9 @@ export default function Header({ activeSection, onNavigate }: HeaderProps) {
               ))}
             </nav>
 
-            {/* CTA Button Desktop */}
             <div className="hidden md:flex items-center gap-4">
               <a
-                href={whatsappLink}
+                href={WHATSAPP_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
@@ -135,7 +130,6 @@ export default function Header({ activeSection, onNavigate }: HeaderProps) {
               </a>
             </div>
 
-            {/* Mobile Menu Button */}
             <button
               className="md:hidden p-2 -mr-2 active:scale-95 transition-transform"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -170,11 +164,9 @@ export default function Header({ activeSection, onNavigate }: HeaderProps) {
         </div>
       </header>
 
-      {/* Mobile Menu - Outside header to avoid z-index issues */}
       <AnimatePresence>
         {isMenuOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -184,7 +176,6 @@ export default function Header({ activeSection, onNavigate }: HeaderProps) {
               onClick={() => setIsMenuOpen(false)}
             />
 
-            {/* Menu Panel */}
             <motion.div
               ref={menuRef}
               initial={{ x: '100%' }}
@@ -193,7 +184,6 @@ export default function Header({ activeSection, onNavigate }: HeaderProps) {
               transition={{ type: 'tween', duration: 0.3, ease: 'easeInOut' }}
               className="fixed top-0 right-0 bottom-0 w-[80%] max-w-[320px] bg-white shadow-2xl z-50 md:hidden flex flex-col"
             >
-              {/* Menu Header */}
               <div className="flex items-center justify-between p-4 border-b border-gray-100">
                 <div className="flex items-center gap-2">
                   <Snowflake className="w-6 h-6 text-blue-600" />
@@ -208,7 +198,6 @@ export default function Header({ activeSection, onNavigate }: HeaderProps) {
                 </button>
               </div>
 
-              {/* Menu Links */}
               <nav className="flex-1 overflow-y-auto py-4 px-2">
                 {navLinks.map((link, index) => (
                   <motion.button
@@ -231,40 +220,31 @@ export default function Header({ activeSection, onNavigate }: HeaderProps) {
                 ))}
               </nav>
 
-              {/* Menu Footer CTA */}
               <div className="p-4 border-t border-gray-100 space-y-3">
                 <a
-                  href={whatsappLink}
+                  href={WHATSAPP_LINK}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 bg-green-500 active:bg-green-600 text-white px-4 py-3.5 rounded-xl font-semibold transition-all active:scale-[0.98]"
                 >
                   <MessageCircle className="w-5 h-5" />
-                  <span>WhatsApp: {data.phoneDisplay}</span>
+                  <span>WhatsApp: +53 5 5511 0934</span>
                 </a>
                 <div className="flex items-center justify-center gap-4 pt-2">
-                  {data.facebookUrl && data.facebookUrl !== '#' && (
-                    <a
-                      href={data.facebookUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 bg-gray-100 active:bg-blue-100 rounded-full flex items-center justify-center transition-colors"
-                      aria-label="Facebook"
-                    >
-                      <i className="fab fa-facebook-f text-gray-600 text-sm" />
-                    </a>
-                  )}
-                  {data.instagramUrl && data.instagramUrl !== '#' && (
-                    <a
-                      href={data.instagramUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 bg-gray-100 active:bg-pink-100 rounded-full flex items-center justify-center transition-colors"
-                      aria-label="Instagram"
-                    >
-                      <i className="fab fa-instagram text-gray-600 text-sm" />
-                    </a>
-                  )}
+                  <a
+                    href="#"
+                    className="w-10 h-10 bg-gray-100 active:bg-blue-100 rounded-full flex items-center justify-center transition-colors"
+                    aria-label="Facebook"
+                  >
+                    <i className="fab fa-facebook-f text-gray-600 text-sm" />
+                  </a>
+                  <a
+                    href="#"
+                    className="w-10 h-10 bg-gray-100 active:bg-pink-100 rounded-full flex items-center justify-center transition-colors"
+                    aria-label="Instagram"
+                  >
+                    <i className="fab fa-instagram text-gray-600 text-sm" />
+                  </a>
                 </div>
               </div>
             </motion.div>
