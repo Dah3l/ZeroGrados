@@ -1,9 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Snowflake, MessageCircle, Menu, X } from 'lucide-react';
-
-const WHATSAPP_NUMBER = '5355511093';
-const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=Hola%2C%20me%20interesa%20informaci%C3%B3n%20sobre%20los%20servicios%20de%20Zero%20Grados`;
+import { useBusiness } from '../context/BusinessContext';
 
 interface HeaderProps {
   activeSection: string;
@@ -11,9 +9,12 @@ interface HeaderProps {
 }
 
 export default function Header({ activeSection, onNavigate }: HeaderProps) {
+  const { data } = useBusiness();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const whatsappLink = `https://wa.me/${data.phoneNumber}?text=${encodeURIComponent(data.whatsappMessage)}`;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -96,7 +97,7 @@ export default function Header({ activeSection, onNavigate }: HeaderProps) {
                   scrolled || isMenuOpen ? 'text-gray-900' : 'text-white'
                 }`}
               >
-                Zero Grados
+                {data.businessName}
               </span>
             </button>
 
@@ -124,7 +125,7 @@ export default function Header({ activeSection, onNavigate }: HeaderProps) {
             {/* CTA Button Desktop */}
             <div className="hidden md:flex items-center gap-4">
               <a
-                href={WHATSAPP_LINK}
+                href={whatsappLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
@@ -233,29 +234,37 @@ export default function Header({ activeSection, onNavigate }: HeaderProps) {
               {/* Menu Footer CTA */}
               <div className="p-4 border-t border-gray-100 space-y-3">
                 <a
-                  href={WHATSAPP_LINK}
+                  href={whatsappLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 bg-green-500 active:bg-green-600 text-white px-4 py-3.5 rounded-xl font-semibold transition-all active:scale-[0.98]"
                 >
                   <MessageCircle className="w-5 h-5" />
-                  <span>WhatsApp: +53 5 5511 0934</span>
+                  <span>WhatsApp: {data.phoneDisplay}</span>
                 </a>
                 <div className="flex items-center justify-center gap-4 pt-2">
-                  <a
-                    href="#"
-                    className="w-10 h-10 bg-gray-100 active:bg-blue-100 rounded-full flex items-center justify-center transition-colors"
-                    aria-label="Facebook"
-                  >
-                    <i className="fab fa-facebook-f text-gray-600 text-sm" />
-                  </a>
-                  <a
-                    href="#"
-                    className="w-10 h-10 bg-gray-100 active:bg-pink-100 rounded-full flex items-center justify-center transition-colors"
-                    aria-label="Instagram"
-                  >
-                    <i className="fab fa-instagram text-gray-600 text-sm" />
-                  </a>
+                  {data.facebookUrl && data.facebookUrl !== '#' && (
+                    <a
+                      href={data.facebookUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 bg-gray-100 active:bg-blue-100 rounded-full flex items-center justify-center transition-colors"
+                      aria-label="Facebook"
+                    >
+                      <i className="fab fa-facebook-f text-gray-600 text-sm" />
+                    </a>
+                  )}
+                  {data.instagramUrl && data.instagramUrl !== '#' && (
+                    <a
+                      href={data.instagramUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 bg-gray-100 active:bg-pink-100 rounded-full flex items-center justify-center transition-colors"
+                      aria-label="Instagram"
+                    >
+                      <i className="fab fa-instagram text-gray-600 text-sm" />
+                    </a>
+                  )}
                 </div>
               </div>
             </motion.div>

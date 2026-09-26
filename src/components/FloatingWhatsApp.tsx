@@ -1,11 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
-
-const WHATSAPP_NUMBER = '5355511093';
-const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=Hola%2C%20me%20interesa%20informaci%C3%B3n%20sobre%20los%20servicios%20de%20Zero%20Grados`;
+import { useBusiness } from '../context/BusinessContext';
 
 export default function FloatingWhatsApp() {
+  const { data } = useBusiness();
+  const whatsappLink = `https://wa.me/${data.phoneNumber}?text=${encodeURIComponent(data.whatsappMessage)}`;
   const [isFooterVisible, setIsFooterVisible] = useState(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
@@ -48,7 +48,7 @@ export default function FloatingWhatsApp() {
       <AnimatePresence>
         {!isFooterVisible && (
           <motion.a
-            href={WHATSAPP_LINK}
+            href={whatsappLink}
             target="_blank"
             rel="noopener noreferrer"
             initial={{ scale: 0, opacity: 0 }}

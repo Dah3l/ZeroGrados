@@ -1,14 +1,14 @@
 import { motion } from 'framer-motion';
 import { Snowflake, MessageCircle, ChevronDown } from 'lucide-react';
-
-const WHATSAPP_NUMBER = '5355511093';
-const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=Hola%2C%20me%20interesa%20informaci%C3%B3n%20sobre%20los%20servicios%20de%20Zero%20Grados`;
+import { useBusiness } from '../context/BusinessContext';
 
 interface HeroProps {
   onNavigate: (sectionId: string) => void;
 }
 
 export default function Hero({ onNavigate }: HeroProps) {
+  const { data } = useBusiness();
+  const whatsappLink = `https://wa.me/${data.phoneNumber}?text=${encodeURIComponent(data.whatsappMessage)}`;
   return (
     <section
       id="inicio"
@@ -63,28 +63,32 @@ export default function Hero({ onNavigate }: HeroProps) {
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-white leading-tight mb-4 sm:mb-6">
-            ¡NO ESPERES AL{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-300">
-              VERANO
-            </span>
-            !
+            {data.heroTitle.split(' ').map((word, i) => {
+              if (word === 'VERANO' || word === 'VERANO!') {
+                return (
+                  <span key={i} className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-300">
+                    {word}{' '}
+                  </span>
+                );
+              }
+              return <span key={i}>{word} </span>;
+            })}
             <br />
             <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mt-2 block">
-              ¡TEN TU ESPACIO CLIMATIZADO YA!
+              {data.heroSubtitle}
             </span>
           </h1>
 
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 font-medium mb-3 sm:mb-4">
-            Soluciones integrales para tu hogar y negocio.
+            {data.heroDescription.split('.')[0]}.
           </p>
           <p className="text-sm sm:text-base md:text-lg text-white/70 max-w-2xl mx-auto mb-8 sm:mb-10 px-2">
-            Mantenimiento, reparación e instalación profesional para que disfrutes del confort en
-            todo momento.
+            {data.heroDescription.split('.').slice(1).join('.').trim()}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4">
             <a
-              href={WHATSAPP_LINK}
+              href={whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto flex items-center justify-center gap-2 sm:gap-3 bg-green-500 active:bg-green-600 hover:bg-green-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-full text-base sm:text-lg font-bold transition-all duration-300 shadow-2xl hover:shadow-green-500/30 active:scale-95"
