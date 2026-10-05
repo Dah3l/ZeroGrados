@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  base: '/ZeroGrados/', // ← Nueva línea: coincide con el nombre de tu repositorio
+  base: "/", // El sitio se sirve desde la raíz del dominio
   plugins: [react(), tailwindcss()],
   server: {
     host: "0.0.0.0",
